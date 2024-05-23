@@ -6,16 +6,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class LeagueTest {
+
     @Test
-    public void testAddPlayer()
+    public void testAddPlayerNewGame()
     {
-        // Given
+        // Given a new game
         League league = new League();
 
-        // When
+        // When new player
         league.addPlayer("Bob");
 
         // Then
@@ -44,8 +46,9 @@ public class LeagueTest {
         Assert.assertThat(lastRowPlayers, IsCollectionContaining.hasItem("NewPlayer"));
     }
 
+
     @Test
-    public void testAddPlayerInOnGoingLeagueNewInvalidPlayerNotAdded()
+    public void testAddPlayerInOnGoingLeagueWith2PlayersNewValidPlayerAddsAtBottom()
     {
         // Given
         League league = new League();
@@ -53,19 +56,134 @@ public class LeagueTest {
         league.addPlayer("B");
 
         // When
-        //league.addPlayer("A");
+        league.addPlayer("C");
+        List<LeagueRow> rows = league.getRows();
+        List<String> lastRowPlayers = rows.get(1).getPlayers();
 
         // Then
-        assertThrows(IllegalArgumentException.class,
-                () -> league.addPlayer("A"));
 
-
-//        List<LeagueRow> rows = league.getRows();
-//        Assert.assertEquals(2, rows.size());
-//        List<String> lastRowPlayers = rows.get(1).getPlayers();
-//        Assert.assertEquals(1, lastRowPlayers.size());
-//        Assert.assertThat(lastRowPlayers, IsCollectionContaining.hasItem("B"));
+        Assert.assertEquals(2, rows.size());
+        Assert.assertEquals(2, lastRowPlayers.size());
+        Assert.assertThat(lastRowPlayers, IsCollectionContaining.hasItem("C"));
     }
+
+
+    @Test
+    public void testAddPlayerInOnGoingLeagueNewInvalidPlayerNotAdded()
+    {
+        // Given game with 2 players A and B
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+
+        // When adding invalid name
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> league.addPlayer("C!!"));
+        List<LeagueRow> rows = league.getRows();
+        List<String> lastRowPlayers = rows.get(1).getPlayers();
+
+        //Then
+        Assert.assertEquals("Player name C!! contains invalid", exception.getMessage());
+        assertFalse(lastRowPlayers.contains("C!!"));
+
+    }
+
+    @Test
+    public void testAddPlayerInOnGoingLeagueNotUniquePlayerNotAdded()
+    {
+        // Given game with 2 players A and B
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+
+        // When adding existed player
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> league.addPlayer("A"));
+        List<LeagueRow> rows = league.getRows();
+        List<String> lastRowPlayers = rows.get(1).getPlayers();
+
+        // Then player not added and message throws
+        Assert.assertEquals("Cannot add player A because they are already in the game", exception.getMessage());
+        assertFalse(lastRowPlayers.contains("A"));
+    }
+
+    @Test
+    public void testRecordWinSuccess()
+    {
+        // Given game with 2 players A and B and A win
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+        league.recordWin("B", "A");
+    }
+
+    @Test
+    public void testRecordWinFailWinnerNotInGame()
+    {
+        // Given game with 2 players A and B and A win
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+
+        // When adding existed player
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> league.recordWin("BB", "A"));
+
+        Assert.assertEquals("Player BB is not in the game", exception.getMessage());
+    }
+
+    @Test
+    public void testRecordWinFail2()
+    {
+        // Given game with 2 players A and B and A win
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+
+        // When adding existed player
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> league.recordWin("B", "AA"));
+
+        Assert.assertEquals("Player AA is not in the game", exception.getMessage());
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+    @Test
+    public void testGetWinnerEmptyGameReturnsNull()
+    {
+        // Given a new game
+        League league = new League();
+
+        // Then
+        Assert.assertNull(league.getWinner());
+    }
+
+    @Test
+    public void testGetWinnerSuccess()
+    {
+        // Given a new game
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+        league.recordWin("B","A");
+        // Then
+        Assert.assertEquals("B", league.getWinner());
+    }
+
+
+
+
+
 
 
 }
