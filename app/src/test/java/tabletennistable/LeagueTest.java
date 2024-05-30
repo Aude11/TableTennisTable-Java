@@ -114,7 +114,16 @@ public class LeagueTest {
         League league = new League();
         league.addPlayer("A");
         league.addPlayer("B");
+
+        // When B, 1 line above A, won
         league.recordWin("B", "A");
+        List<LeagueRow> rows = league.getRows();
+        List<String> firstRowPlayers = rows.get(0).getPlayers();
+        List<String> lastRowPlayers = rows.get(1).getPlayers();
+
+        // Then
+        Assert.assertThat(firstRowPlayers, IsCollectionContaining.hasItem("B"));
+        Assert.assertThat(lastRowPlayers, IsCollectionContaining.hasItem("A"));
     }
 
     @Test
@@ -133,7 +142,7 @@ public class LeagueTest {
     }
 
     @Test
-    public void testRecordWinFail2()
+    public void testRecordWinFailLoserNotInGame()
     {
         // Given game with 2 players A and B and A win
         League league = new League();
@@ -148,28 +157,38 @@ public class LeagueTest {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     @Test
-    public void testGetWinnerEmptyGameReturnsNull()
+    public void testRecordWinFail()
     {
-        // Given a new game
+        // Given game with 2 players A and B and A win
         League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+        league.addPlayer("C");
+        league.addPlayer("D");
 
-        // Then
-        Assert.assertNull(league.getWinner());
+
+        // When adding existed player
+        Throwable exception = assertThrows(IllegalArgumentException.class,
+                () -> league.recordWin("A", "D"));
+
+        Assert.assertEquals("Cannot record match result. Winner A must be one row below loser D", exception.getMessage());
     }
 
     @Test
     public void testGetWinnerSuccess()
+    {
+        // Given a new game
+        League league = new League();
+        league.addPlayer("A");
+        league.addPlayer("B");
+        league.recordWin("A","B");
+        // Then
+        Assert.assertEquals("A", league.getWinner());
+    }
+
+    @Test
+    public void testGetWinnerSuccessNewWinner()
     {
         // Given a new game
         League league = new League();
@@ -180,10 +199,14 @@ public class LeagueTest {
         Assert.assertEquals("B", league.getWinner());
     }
 
+    @Test
+    public void testGetWinnerEmptyGameReturnsNull()
+    {
+        // Given a new game
+        League league = new League();
 
-
-
-
-
+        // Then
+        Assert.assertNull(league.getWinner());
+    }
 
 }
