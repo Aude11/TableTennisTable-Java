@@ -55,7 +55,7 @@ public class GameSteps {
         response = app.sendCommand("winner");
     }
 
-    @Then("I should see {string} win")
+    @Then("I should see {string} winner")
     public void iShouldSeeWinner(String expected)
     {
         Assert.assertEquals(expected, response);

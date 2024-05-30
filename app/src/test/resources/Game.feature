@@ -9,3 +9,8 @@ Feature: Game
     Given the league has 3 players
     When I record win "Bob Alice"
     Then I should see "Bob" win
+
+  Scenario: On Going League
+    Given the league has 3 players
+    When I record win "Bob Alice"
+    Then I should see "Bob" winner
