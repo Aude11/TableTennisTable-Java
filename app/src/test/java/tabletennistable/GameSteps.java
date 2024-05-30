@@ -39,4 +39,28 @@ public class GameSteps {
     {
         Assert.assertEquals(expected, response);
     }
+
+    @Given("the league has 3 players")
+    public void givenTheLeagueHas3Players()
+    {
+        app.sendCommand("add player Alice");
+        app.sendCommand("add player Bob");
+        app.sendCommand("add player Dan");
+    }
+
+    @When("I record win {string}")
+    public void whenIRecordWin(String action)
+    {
+        app.sendCommand("record win " + action);
+        response = app.sendCommand("winner");
+    }
+
+    @Then("I should see {string} win")
+    public void iShouldSeeWinner(String expected)
+    {
+        Assert.assertEquals(expected, response);
+    }
+
+
+
 }
