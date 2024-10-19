@@ -6,7 +6,7 @@ COPY . .
 
 RUN ./gradlew build
 
-CMD ./gradlew run
+# CMD ./gradlew run
 
 FROM base AS prod
 ENTRYPOINT ./gradlew run --console=plain
