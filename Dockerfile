@@ -4,6 +4,8 @@ WORKDIR /app
 
 COPY . .
 
+RUN ./gradlew build
+
 CMD ./gradlew run
 
 FROM base AS prod
