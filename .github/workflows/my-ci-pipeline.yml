@@ -6,4 +6,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - run: echo Hello World
+      - run: docker build --target test --tag table-tennis-table:testing .
+      - run: docker run -it table-tennis-table:testing
+      - run: docker run table-tennis-table:testing
