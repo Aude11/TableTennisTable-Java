@@ -182,6 +182,7 @@ public class LeagueTest {
         League league = new League();
         league.addPlayer("A");
         league.addPlayer("B");
+        league.recordWin("B","A");
         league.recordWin("A","B");
         // Then
         Assert.assertEquals("A", league.getWinner());
